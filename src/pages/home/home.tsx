@@ -1,6 +1,3 @@
-import { useLazyGetUserQuery } from "@/services/user";
-import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
@@ -9,26 +6,18 @@ import CourseRecommendationPanel from "@/components/CourseRecommendationPanel";
 import WhySection from "@/components/WhySection";
 
 interface Course {
-  title: string;
+  courseId: string;
+  courseName: string;
   description: string;
   duration: string;
   price: string;
-  level: string;
+  url: string;
+  level?: string;
+  tag?: string;
 }
+
 const Home: React.FC = () => {
-  const { t, i18n } = useTranslation();
-  const [getUsers, { isLoading, data: users }] = useLazyGetUserQuery();
-
-  useEffect(() => {
-    void getUsers();
-  }, []);
-
-  const changeLanguage: (lng: string) => Promise<void> = async (
-    lng: string
-  ) => {
-    await i18n.changeLanguage(lng);
-  };
-const [recommendedCourses, setRecommendedCourses] = useState<Course[]>([]);
+  const [recommendedCourses, setRecommendedCourses] = useState<Course[]>([]);
   return (
     <main className="flex flex-col overflow-y-auto bg-slate-900 p-6">
     <div className="h-screen bg-background flex flex-col overflow-hidden">

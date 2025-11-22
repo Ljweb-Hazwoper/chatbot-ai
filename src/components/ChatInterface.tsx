@@ -1,10 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bot, Sparkles, User, X } from "lucide-react";
-// import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useChatSocket } from "@/hooks/use-chat-socket";
+import type { CourseRecommendation } from "@/services/chat/chat-socket.service";
+import { getOrCreateUserId } from "@/utils/user-id";
 
 const suggestedPrompts = [
   "How to get OSHA licence?",
@@ -22,11 +24,14 @@ interface Message {
 }
 
 interface Course {
-  title: string;
+  courseId: string;
+  courseName: string;
   description: string;
   duration: string;
   price: string;
-  level: string;
+  url: string;
+  level?: string;
+  tag?: string;
 }
 
 interface ChatInterfaceProps {
@@ -37,9 +42,86 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string | undefined>();
+  const [currentAssistantMessage, setCurrentAssistantMessage] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  const handlePartial = useCallback(
+    (payload: { delta: string }) => {
+      setCurrentAssistantMessage((prev) => prev + payload.delta);
+    },
+    []
+  );
+
+  const handleFinal = useCallback(
+    (payload: {
+      reply: string;
+      hasNewRecommendations: boolean;
+      recommendations: CourseRecommendation[];
+      sessionId: string;
+    }) => {
+      setCurrentAssistantMessage("");
+      const assistantMessage: Message = {
+        role: "assistant",
+        content: payload.reply,
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+      setSessionId(payload.sessionId);
+
+      if (payload.hasNewRecommendations && onCoursesUpdate) {
+        const courses: Course[] = payload.recommendations.map((rec) => ({
+          courseId: rec.courseId,
+          courseName: rec.courseName,
+          description: rec.description,
+          duration: rec.duration,
+          price: rec.price,
+          url: rec.url,
+        }));
+        onCoursesUpdate(courses);
+      }
+
+      setIsLoading(false);
+    },
+    [onCoursesUpdate]
+  );
+
+  const handleError = useCallback((payload: { message: string }) => {
+    toast({
+      title: "Error",
+      description: payload.message || "Failed to get response. Please try again.",
+      variant: "destructive",
+    });
+    setCurrentAssistantMessage("");
+    setIsLoading(false);
+    setMessages((prev) => prev.slice(0, -1));
+  }, [toast]);
+
+  const handleSessionStarted = useCallback(
+    (payload: { sessionId: string }) => {
+      setSessionId(payload.sessionId);
+    },
+    []
+  );
+
+  const userId = useMemo(() => getOrCreateUserId(), []);
+
+  const { startSession, sendMessage, isConnected } = useChatSocket({
+    userId,
+    handlers: {
+      onPartial: handlePartial,
+      onFinal: handleFinal,
+      onError: handleError,
+      onSessionStarted: handleSessionStarted,
+      onConnect: () => {
+        console.log("Connected to chat server");
+      },
+      onDisconnect: () => {
+        console.log("Disconnected from chat server");
+      },
+    },
+  });
 
   useEffect(() => {
     if (inputRef.current && messages.length === 0) {
@@ -49,57 +131,57 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, currentAssistantMessage]);
 
-  const sendMessage = async (messageText: string) => {
-    if (!messageText.trim() || isLoading) return;
+  useEffect(() => {
+    if (isConnected() && !sessionId) {
+      startSession();
+    }
+  }, [isConnected, sessionId, startSession]);
+
+  const handleSendMessage = (messageText: string) => {
+    if (!messageText.trim() || isLoading || !isConnected()) {
+      if (!isConnected()) {
+        toast({
+          title: "Connection Error",
+          description: "Not connected to chat server. Please wait...",
+          variant: "destructive",
+        });
+      }
+      return;
+    }
 
     const userMessage: Message = { role: "user", content: messageText };
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
+    setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
+    setCurrentAssistantMessage("");
 
     try {
-      const { data, error } = await supabase.functions.invoke("chat", {
-        body: { messages: updatedMessages },
-      });
-
-      if (error) throw error;
-
-      const assistantMessage: Message = {
-        role: "assistant",
-        content: data.message,
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
-
-      // Update course recommendations if provided
-      if (data.recommendations && onCoursesUpdate) {
-        onCoursesUpdate(data.recommendations);
-      }
+      sendMessage(messageText, sessionId);
     } catch (error) {
       console.error("Error sending message:", error);
-      toast({
-        title: "Error",
-        description: "Failed to get response. Please try again.",
-        variant: "destructive",
+      handleError({
+        message: "Failed to send message. Please try again.",
       });
-      setMessages((prev) => prev.slice(0, -1));
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    sendMessage(input);
+    handleSendMessage(input);
   };
 
   const handleNewChat = () => {
     setMessages([]);
     setInput("");
+    setCurrentAssistantMessage("");
+    setSessionId(undefined);
     if (onCoursesUpdate) {
       onCoursesUpdate([]);
+    }
+    if (isConnected()) {
+      startSession();
     }
   };
 
@@ -135,7 +217,7 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
                         key={index}
                         className="px-5 py-2.5 bg-card hover:bg-muted text-foreground text-sm rounded-full transition-all border border-border hover:border-primary/40 focus:outline-none focus:ring-0 shadow-sm animate-fade-in"
                         style={{ animationDelay: `${index * 0.1}s` }}
-                        onClick={() => sendMessage(prompt)}
+                        onClick={() => handleSendMessage(prompt)}
                         tabIndex={-1}
                         disabled={isLoading}
                       >
@@ -191,7 +273,21 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
                   </div>
                 ))}
                 
-                {isLoading && (
+                {isLoading && currentAssistantMessage && (
+                  <div className="flex gap-4 justify-start animate-fade-in">
+                    <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
+                      <Bot className="h-5 w-5 text-primary animate-pulse" />
+                    </div>
+                    <div className="rounded-2xl px-6 py-4 bg-card border-2 border-border shadow-md">
+                      <p className="text-base leading-relaxed whitespace-pre-wrap">
+                        {currentAssistantMessage}
+                        <span className="inline-block w-2 h-4 bg-primary animate-pulse ml-1" />
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {isLoading && !currentAssistantMessage && (
                   <div className="flex gap-4 justify-start animate-fade-in">
                     <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
                       <Bot className="h-5 w-5 text-primary animate-pulse" />

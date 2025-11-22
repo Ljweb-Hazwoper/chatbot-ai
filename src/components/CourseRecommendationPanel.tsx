@@ -5,11 +5,13 @@ import { Clock, DollarSign, ShoppingCart, Flame, Sparkles } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Course {
-  title: string;
+  courseId: string;
+  courseName: string;
   duration: string;
   price: string;
-  level?: string;
   description: string;
+  url: string;
+  level?: string;
   tag?: string;
 }
 
@@ -19,37 +21,47 @@ interface CourseRecommendationPanelProps {
 
 const defaultCourses: Course[] = [
   {
-    title: "OSHA 40-Hour Hazwoper",
+    courseId: "default-1",
+    courseName: "OSHA 40-Hour Hazwoper",
     duration: "40 Hours",
     price: "$299",
     tag: "Popular",
     description: "Comprehensive hazardous waste operations training",
+    url: "#",
   },
   {
-    title: "OSHA 24-Hour Hazwoper",
+    courseId: "default-2",
+    courseName: "OSHA 24-Hour Hazwoper",
     duration: "24 Hours",
     price: "$199",
     tag: "Refresher",
     description: "Essential hazmat training for workers",
+    url: "#",
   },
   {
-    title: "8-Hour Annual Refresher",
+    courseId: "default-3",
+    courseName: "8-Hour Annual Refresher",
     duration: "8 Hours",
     price: "$99",
     tag: "Required",
     description: "Annual refresher for certified pros",
+    url: "#",
   },
   {
-    title: "Confined Space Entry",
+    courseId: "default-4",
+    courseName: "Confined Space Entry",
     duration: "16 Hours",
     price: "$179",
     description: "Safety training for confined spaces",
+    url: "#",
   },
   {
-    title: "DOT Hazmat Training",
+    courseId: "default-5",
+    courseName: "DOT Hazmat Training",
     duration: "12 Hours",
     price: "$149",
     description: "Department of Transportation compliance",
+    url: "#",
   },
 ];
 
@@ -79,7 +91,7 @@ const CourseRecommendationPanel = ({ courses }: CourseRecommendationPanelProps) 
               <CardContent className="p-4 space-y-3" tabIndex={-1}>
                 <div className="space-y-2">
                   <div className="flex items-start justify-between gap-2">
-                    <h4 className="font-semibold text-sm text-foreground leading-tight">{course.title}</h4>
+                    <h4 className="font-semibold text-sm text-foreground leading-tight">{course.courseName}</h4>
                     {(course.tag || course.level) && (
                       <Badge variant="secondary" className="bg-primary/20 text-primary text-xs whitespace-nowrap border border-primary/30 px-2 py-0.5">
                         {course.tag || course.level}
@@ -102,7 +114,16 @@ const CourseRecommendationPanel = ({ courses }: CourseRecommendationPanelProps) 
                   </div>
                 </div>
 
-                <Button size="sm" variant="outline" className="w-full border-primary/30 text-foreground hover:bg-primary/10 hover:text-primary font-medium gap-2 rounded-lg h-9 text-xs focus:ring-0 focus:outline-none">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="w-full border-primary/30 text-foreground hover:bg-primary/10 hover:text-primary font-medium gap-2 rounded-lg h-9 text-xs focus:ring-0 focus:outline-none"
+                  onClick={() => {
+                    if (course.url && course.url !== '#') {
+                      window.open(course.url, '_blank', 'noopener,noreferrer');
+                    }
+                  }}
+                >
                   <ShoppingCart className="h-4 w-4" />
                   View Details
                 </Button>
