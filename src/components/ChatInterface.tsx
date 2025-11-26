@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useChatSocket } from "@/hooks/use-chat-socket";
 import type { CourseRecommendation } from "@/services/chat/chat-socket.service";
 import { getOrCreateUserId } from "@/utils/user-id";
+import HeroSection from "./HeroSection";
 
 const suggestedPrompts = [
   "How to get OSHA licence?",
@@ -187,15 +188,16 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
 
   return (
     <div className="w-full max-w-5xl mx-auto flex flex-col h-full">
-      <div className="flex flex-col h-full bg-card/30 backdrop-blur-sm rounded-3xl border-2 border-border overflow-hidden shadow-xl">
-        
+      {messages.length === 0 && <HeroSection />}
+      <div className="flex flex-col h-full bg-card/30 backdrop-blur-sm rounded-3xl border-2 border-border overflow-hidden shadow-xl m-4">
+
         {/* Header with Close Button */}
         {messages.length > 0 && (
           <div className="flex items-center justify-between px-6 py-3 border-b border-border">
             <h3 className="text-sm font-semibold text-foreground">Chat with SafetyPartner</h3>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleNewChat}
               className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
             >
@@ -203,7 +205,7 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
             </Button>
           </div>
         )}
-        
+
         {/* Messages Area with Scroll */}
         <ScrollArea className="flex-1 p-6">
           <div className="space-y-6 max-w-4xl mx-auto min-h-full flex flex-col">
@@ -245,7 +247,7 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
                     New Chat
                   </Button>
                 </div>
-                
+
                 {messages.map((message, index) => (
                   <div
                     key={index}
@@ -257,13 +259,17 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
                       </div>
                     )}
                     <div
-                      className={`rounded-2xl px-6 py-4 max-w-2xl ${
-                        message.role === "user"
-                          ? "bg-primary text-primary-foreground shadow-lg"
-                          : "bg-card text-foreground border-2 border-border shadow-md"
-                      }`}
+                      className={`rounded-2xl px-6 py-4 max-w-2xl ${message.role === "user"
+                        ? "bg-primary text-primary-foreground shadow-lg"
+                        : "bg-card text-foreground border-2 border-border shadow-md"
+                        }`}
                     >
-                      <p className="text-base leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                      <p className="text-base leading-relaxed whitespace-pre-wrap">
+                        {message.role === "user" && message.content}
+                        {message.role === "assistant" && (
+                          <div dangerouslySetInnerHTML={{ __html: message.content }}></div>
+                        )}
+                      </p>
                     </div>
                     {message.role === "user" && (
                       <div className="flex-shrink-0 w-10 h-10 bg-foreground/10 rounded-full flex items-center justify-center border border-border">
@@ -272,7 +278,7 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
                     )}
                   </div>
                 ))}
-                
+
                 {isLoading && currentAssistantMessage && (
                   <div className="flex gap-4 justify-start animate-fade-in">
                     <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
@@ -280,7 +286,7 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
                     </div>
                     <div className="rounded-2xl px-6 py-4 bg-card border-2 border-border shadow-md">
                       <p className="text-base leading-relaxed whitespace-pre-wrap">
-                        {currentAssistantMessage}
+                        <div dangerouslySetInnerHTML={{ __html: currentAssistantMessage }}></div>
                         <span className="inline-block w-2 h-4 bg-primary animate-pulse ml-1" />
                       </p>
                     </div>
