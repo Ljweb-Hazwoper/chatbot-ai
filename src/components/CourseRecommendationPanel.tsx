@@ -27,7 +27,7 @@ const defaultCourses: Course[] = [
     price: "$299",
     tag: "Popular",
     description: "Comprehensive hazardous waste operations training",
-    url: "#",
+    url: "https://hazwoper-osha.com/online-courses/osha-40-hour-hazwoper-online",
   },
   {
     courseId: "default-2",
@@ -36,7 +36,7 @@ const defaultCourses: Course[] = [
     price: "$199",
     tag: "Refresher",
     description: "Essential hazmat training for workers",
-    url: "#",
+    url: "https://hazwoper-osha.com/online-courses/osha-24-hour-hazwoper-online",
   },
   {
     courseId: "default-3",
@@ -45,7 +45,7 @@ const defaultCourses: Course[] = [
     price: "$99",
     tag: "Required",
     description: "Annual refresher for certified pros",
-    url: "#",
+    url: "https://hazwoper-osha.com/online-courses/8-hour-hazwoper-tsd-operations-p",
   },
   {
     courseId: "default-4",
@@ -53,7 +53,7 @@ const defaultCourses: Course[] = [
     duration: "16 Hours",
     price: "$179",
     description: "Safety training for confined spaces",
-    url: "#",
+    url: "https://hazwoper-osha.com/online-courses/osha-permit-required-confined-space-entry-training",
   },
   {
     courseId: "default-5",
@@ -61,7 +61,7 @@ const defaultCourses: Course[] = [
     duration: "12 Hours",
     price: "$149",
     description: "Department of Transportation compliance",
-    url: "#",
+    url: "https://hazwoper-osha.com/online-courses/dot-hazmat-function-specific-training-the-hazmat-table",
   },
 ];
 

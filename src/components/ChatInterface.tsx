@@ -187,13 +187,13 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto flex flex-col h-full">
+    <div className="w-full mx-auto flex flex-col h-full">
       {messages.length === 0 && <HeroSection />}
-      <div className="flex flex-col h-full bg-card/30 backdrop-blur-sm rounded-3xl border-2 border-border overflow-hidden shadow-xl m-4">
+      <div className="flex flex-col h-full bg-card/30 backdrop-blur-sm overflow-hidden">
 
         {/* Header with Close Button */}
         {messages.length > 0 && (
-          <div className="flex items-center justify-between px-6 py-3 border-b border-border">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border">
             <h3 className="text-sm font-semibold text-foreground">Chat with SafetyPartner</h3>
             <Button
               variant="ghost"
@@ -207,8 +207,8 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
         )}
 
         {/* Messages Area with Scroll */}
-        <ScrollArea className="flex-1 p-6">
-          <div className="space-y-6 max-w-4xl mx-auto min-h-full flex flex-col">
+        <ScrollArea className="flex-1">
+          <div className="space-y-6 max-w-5xl mx-auto min-h-full flex flex-col">
             {messages.length === 0 ? (
               <div className="flex-1 flex items-center justify-center">
                 <div className="space-y-6 text-center max-w-2xl">
@@ -254,7 +254,7 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
                     className={`flex gap-4 animate-fade-in ${message.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     {message.role === "assistant" && (
-                      <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
+                      <div className="shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
                         <Bot className="h-5 w-5 text-primary" />
                       </div>
                     )}
@@ -264,15 +264,15 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
                         : "bg-card text-foreground border-2 border-border shadow-md"
                         }`}
                     >
-                      <p className="text-base leading-relaxed whitespace-pre-wrap">
+                      <p className="text-base leading-relaxed whitespace-pre-wrap response-content-wrapper">
                         {message.role === "user" && message.content}
                         {message.role === "assistant" && (
-                          <div dangerouslySetInnerHTML={{ __html: message.content }}></div>
+                          <div className="response-content" dangerouslySetInnerHTML={{ __html: message.content }}></div>
                         )}
                       </p>
                     </div>
                     {message.role === "user" && (
-                      <div className="flex-shrink-0 w-10 h-10 bg-foreground/10 rounded-full flex items-center justify-center border border-border">
+                      <div className="shrink-0 w-10 h-10 bg-foreground/10 rounded-full flex items-center justify-center border border-border">
                         <User className="h-5 w-5 text-foreground" />
                       </div>
                     )}
@@ -281,7 +281,7 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
 
                 {isLoading && currentAssistantMessage && (
                   <div className="flex gap-4 justify-start animate-fade-in">
-                    <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
+                    <div className="shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
                       <Bot className="h-5 w-5 text-primary animate-pulse" />
                     </div>
                     <div className="rounded-2xl px-6 py-4 bg-card border-2 border-border shadow-md">
@@ -295,7 +295,7 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
 
                 {isLoading && !currentAssistantMessage && (
                   <div className="flex gap-4 justify-start animate-fade-in">
-                    <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
+                    <div className="shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
                       <Bot className="h-5 w-5 text-primary animate-pulse" />
                     </div>
                     <div className="rounded-2xl px-6 py-4 bg-card border-2 border-border">
@@ -314,31 +314,31 @@ const ChatInterface = ({ onCoursesUpdate }: ChatInterfaceProps) => {
         </ScrollArea>
 
         {/* Input Area - Fixed at Bottom */}
-        <div className="p-6 border-t-2 border-border bg-card/80 backdrop-blur-sm flex-shrink-0">
+        <div className="p-4 border-t-2 border-border bg-card/80 backdrop-blur-sm shrink-0">
           <form onSubmit={handleSubmit}>
-            <div className="flex gap-3 items-center bg-background/50 rounded-2xl p-4 border-2 border-primary/30 hover:border-primary/50 transition-all shadow-lg focus-within:border-primary focus-within:shadow-primary/20">
-              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center border border-primary/30">
-                <Bot className="h-6 w-6 text-primary" />
+            <div className="flex gap-3 items-center bg-background/50 rounded-2xl p-3 border-2 border-primary/30 hover:border-primary/50 transition-all shadow-lg focus-within:border-primary focus-within:shadow-primary/20">
+              <div className="shrink-0 w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center border border-primary/30">
+                <Bot className="h-5 w-5 text-primary" />
               </div>
               <Input
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={messages.length === 0 ? "Ask me anything about OSHA training..." : "Ask a follow-up question..."}
-                className="flex-1 h-12 text-lg border-0 bg-transparent text-foreground placeholder:text-muted-foreground focus-visible:ring-0 font-medium"
+                className="flex-1 h-10 text-lg border-0 bg-transparent text-foreground placeholder:text-muted-foreground focus-visible:ring-0 font-medium"
                 autoFocus
                 disabled={isLoading}
               />
               <Button
                 type="submit"
                 size="lg"
-                className="relative overflow-hidden bg-gradient-to-r from-primary via-primary to-primary/80 hover:from-primary/90 hover:via-primary/80 hover:to-primary/70 text-primary-foreground font-bold px-6 gap-2 rounded-xl h-12 shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all group"
+                className="relative overflow-hidden bg-gradient-to-r from-primary via-primary to-primary/80 hover:from-primary/90 hover:via-primary/80 hover:to-primary/70 text-primary-foreground font-bold px-6 gap-2 rounded-xl h-10 shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all group"
                 tabIndex={0}
                 disabled={isLoading}
               >
                 <Sparkles className="h-5 w-5 group-hover:rotate-12 transition-transform" />
                 <span className="relative z-10">{isLoading ? "..." : "Ask"}</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-full group-hover:translate-x-[100%] transition-transform duration-1000" />
               </Button>
             </div>
           </form>

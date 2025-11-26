@@ -333,3 +333,16 @@
     @apply bg-background text-foreground;
   }
 } */
+.response-content-wrapper > div > * {
+  margin-bottom: 1em;
+}
+.response-content-wrapper > div > *:last-child {
+  margin-bottom: 0;
+}
+.response-content-wrapper > div > ul > li {
+  margin-bottom: 1em;
+}
+.response-content-wrapper > div > ul > li:last-child {
+  margin-bottom: 0;
+}
+

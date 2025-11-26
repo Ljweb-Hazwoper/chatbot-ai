@@ -4,7 +4,7 @@ const hazwoperLogo = 'https://media.hazwoper-osha.com/wp-content/uploads/2023/02
 const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-b-2 border-border shadow-sm">
-      <div className="container mx-auto px-6 h-14 flex items-center justify-between">
+      <div className="container mx-auto px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <span className="text-xl font-bold text-foreground">SafetyPartner</span>
         </div>

@@ -8,6 +8,9 @@ const ThemeToggle = () => {
   useEffect(() => {
     const root = window.document.documentElement;
     const initialTheme = root.classList.contains("light") ? "light" : "dark";
+
+    root.classList.remove("light", "dark");
+    root.classList.add(initialTheme);
     setTheme(initialTheme);
   }, []);
 

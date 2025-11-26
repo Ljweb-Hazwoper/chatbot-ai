@@ -20,7 +20,7 @@ const features = [
 
 const WhySection = () => {
   return (
-    <section className="fixed bottom-0 left-0 right-0 py-3 px-6 border-t-2 border-border bg-card/95 backdrop-blur-md z-40 shadow-lg">
+    <section className="fixed h-[103px] overflow-y-auto bottom-0 left-0 right-0 py-3 px-6 border-t-2 border-border bg-card/95 backdrop-blur-md z-40 shadow-lg">
       <div className="container mx-auto">
         <div className="flex items-center justify-center gap-8 max-w-6xl mx-auto">
           <h2 className="text-lg font-bold text-foreground flex-shrink-0">

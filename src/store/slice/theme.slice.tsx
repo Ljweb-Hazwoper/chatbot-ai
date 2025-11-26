@@ -6,7 +6,7 @@ type IAppStateSlice = {
 };
 
 const initialState: IAppStateSlice = {
-  theme: "light",
+  theme: "dark",
   sidebarOpen: false,
 };
 
