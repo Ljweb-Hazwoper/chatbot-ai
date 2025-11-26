@@ -8,7 +8,7 @@
     "format": "prettier src/**/*.{ts,tsx} --write",
     "lint": "eslint --max-warnings 0",
     "lint:fix": "eslint --max-warnings 0 --fix",
-     "dev": "vite --port 5173",
+    "dev": "vite --port 5173",
     "storybook": "storybook dev -p 6006",
     "storybook:setup": "node node_modules/@storybook/addon-styling/bin/postinstall.js",
     "storybook:build": "storybook build",
@@ -22,7 +22,7 @@
     "preview": "vite preview",
     "commitlint": "commitlint --edit",
     "commitizen": "exec < /dev/tty && git cz --hook || true",
-    "prepare": "husky",
+    "prepare": "npx husky",
     "type-check": "tsc --noEmit",
     "analyze": "vite build --mode analyze",
     "clean": "shx rm -rf dist node_modules/.vite coverage storybook-static",
@@ -89,6 +89,7 @@
     "eslint-plugin-tailwindcss": "^3.18.0",
     "eslint-plugin-unicorn": "^55.0.0",
     "globals": "^15.9.0",
+    "husky": "^9.1.7",
     "i18next": "^23.15.2",
     "i18next-browser-languagedetector": "^8.0.0",
     "jsdom": "^25.0.1",
@@ -104,5 +105,6 @@
     "extends": [
       "plugin:storybook/recommended"
     ]
-  }
+  },
+  "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad"
 }
