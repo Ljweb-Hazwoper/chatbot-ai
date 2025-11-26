@@ -1,0 +1,20 @@
+services:
+  chatbot-ai:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - VITE_PORT=${VITE_PORT}
+        - VITE_API_URL=${VITE_API_URL}
+    ports:
+      - "${VITE_PORT}:${VITE_PORT}"
+    networks:
+      - app-network
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+      - VITE_PORT=${VITE_PORT}
+
+networks:
+  app-network:
+    driver: bridge
+
